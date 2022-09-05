@@ -1,8 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 import { initializeApp } from "firebase/app";
+
 import reportWebVitals from './reportWebVitals';
+
 import HomePage from './app/ui/pages/Home';
+import BoardGamePage from './app/ui/pages/BoardGame';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDqQ3blEKvMKH7snySU42sxe5Hgbug_v-g",
@@ -20,7 +28,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <HomePage />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="game" element={<BoardGamePage />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
