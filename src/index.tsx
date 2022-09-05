@@ -1,8 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import { initializeApp } from "firebase/app";
 import reportWebVitals from './reportWebVitals';
+import HomePage from './app/ui/pages/Home';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDqQ3blEKvMKH7snySU42sxe5Hgbug_v-g",
+  authDomain: "battleship-6742a.firebaseapp.com",
+  projectId: "battleship-6742a",
+  storageBucket: "battleship-6742a.appspot.com",
+  messagingSenderId: "774171118283",
+  appId: "1:774171118283:web:d4b9ee4a11b25e5122294e"
+};
+
+initializeApp(firebaseConfig)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
