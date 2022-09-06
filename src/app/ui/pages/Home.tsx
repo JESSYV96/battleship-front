@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Player } from '../../domain/models/Player';
+import { socket } from '../../infra/services/socket';
 
 function HomePage() {
   const navigate = useNavigate();
   const [player, setPlayer] = useState<Player>({ username: '' })
+
+  socket.on('connect', () => {
+    console.log(socket.id);
+  })
 
   return (
     <main>
