@@ -1,3 +1,5 @@
 export type Player = {
-    username: string
+    name: string
+    roomId: string
+    role: '' | "opponent" | "creator"
 }
