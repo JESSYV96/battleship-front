@@ -7,7 +7,7 @@ import { socket } from '../../infra/services/socket'
 function WaitingForJoin() {
     const params = useParams();
     const navigate = useNavigate();
-    const [player, setPlayer] = useState<Player>({ name: '', roomId: '', role: '' })
+    const [player, setPlayer] = useState<Player>()
 
 
     useEffect(() => {
@@ -15,9 +15,8 @@ function WaitingForJoin() {
             console.log(socket.id);
         })
         socket.emit('joinGame', params.roomId, (player: Player) => {
-            setPlayer(player);
+            navigate(generatePath("/games/:roomId", { roomId: params.roomId }), { state: player })
         })
-        navigate(generatePath("/games/:roomId", { roomId: params.roomId }), {state: player})
     }, [navigate, params.roomId, player])
     return (
         <></>

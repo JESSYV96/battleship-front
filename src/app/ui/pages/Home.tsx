@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom';
 import { Player } from '../../domain/models/Player';
 import { socket } from '../../infra/services/socket';
 
 function HomePage() {
   const navigate = useNavigate();
-  const [player, setPlayer] = useState<Player>({ name: '', roomId: '', role: '' })
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -13,12 +12,9 @@ function HomePage() {
     })
   }, [])
 
-  
-
   const createNewGame = () => {
     socket.emit('createGame', (player: Player) => {
-      setPlayer(player)
-      navigate(generatePath("/games/:roomId", { roomId: player.roomId }))
+      navigate(generatePath("/games/:roomId", { roomId: player.roomId }), { state: player })
     });
   }
 
