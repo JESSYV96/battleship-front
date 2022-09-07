@@ -13,6 +13,8 @@ function HomePage() {
     })
   }, [])
 
+  
+
   const createNewGame = () => {
     socket.emit('createGame', (player: Player) => {
       setPlayer(player)
