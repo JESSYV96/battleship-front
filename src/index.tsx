@@ -33,8 +33,8 @@ root.render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="games">
-          <Route path=":roomId" element={<BoardGamePage />} />
-          <Route path=":roomId/join" element={<WaitingForJoin />} />
+          <Route path=":gameId" element={<BoardGamePage />} />
+          <Route path=":gameId/join" element={<WaitingForJoin />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -2,22 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, generatePath } from "react-router-dom";
 import { Player } from '../../domain/models/Player';
 
-import { socket } from '../../infra/services/socket'
+import socket from '../../infra/services/socket'
 
 function WaitingForJoin() {
+    const [player, setPlayer] = useState<Player>()
     const params = useParams();
     const navigate = useNavigate();
-    const [player, setPlayer] = useState<Player>()
 
 
     useEffect(() => {
-        socket.on('connect', () => {
-            console.log(socket.id);
+        socket.on('connect', () => { })
+        socket.emit('joinGame', params.gameId, (opponent: Player) => {
+            setPlayer(opponent)
         })
-        socket.emit('joinGame', params.roomId, (player: Player) => {
-            navigate(generatePath("/games/:roomId", { roomId: params.roomId }), { state: player })
-        })
-    }, [navigate, params.roomId, player])
+        if (player) {
+            navigate(generatePath("/games/:gameId", { gameId: params.gameId }), { state: player })
+        }
+
+    }, [socket, navigate, player])
+
+
+
     return (
         <></>
     )

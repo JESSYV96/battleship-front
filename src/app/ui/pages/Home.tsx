@@ -1,7 +1,9 @@
+import { uuidv4 } from '@firebase/util';
 import React, { useEffect } from 'react'
+
 import { generatePath, useNavigate } from 'react-router-dom';
 import { Player } from '../../domain/models/Player';
-import { socket } from '../../infra/services/socket';
+import socket from '../../infra/services/socket';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -13,8 +15,9 @@ function HomePage() {
   }, [])
 
   const createNewGame = () => {
-    socket.emit('createGame', (player: Player) => {
-      navigate(generatePath("/games/:roomId", { roomId: player.roomId }), { state: player })
+    const gameId: string = uuidv4()
+    socket.emit('createGame', gameId, (player: Player) => {
+      navigate(generatePath("/games/:gameId", { gameId }), { state: player })
     });
   }
 
