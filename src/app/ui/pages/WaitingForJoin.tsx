@@ -12,6 +12,7 @@ function WaitingForJoin() {
 
     useEffect(() => {
         socket.on('connect', () => { })
+        // The Iplayer interface not sync with the API, that why I set any type
         socket.emit('joinGame', params.gameId, (opponent: IPlayer) => {
             setPlayer(opponent)
         })
@@ -19,7 +20,7 @@ function WaitingForJoin() {
             navigate(generatePath("/games/:gameId", { gameId: params.gameId }), { state: player })
         }
 
-    }, [socket, navigate, player, params.gameId])
+    }, [navigate, player, params.gameId])
 
 
 
