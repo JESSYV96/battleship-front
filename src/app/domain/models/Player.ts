@@ -1,23 +1,20 @@
 
+import { EPointStatus } from "../enums/PointStatus";
+import { Coordinate } from "../valueObjects/Coordinate";
 import { IBoard } from "./Board";
+import { IRole } from "./Game";
 import { ITurn } from "./Turn";
-import { EPointStatus } from "./Point";
-import { Location } from "./Location";
 import { IBaseShip, IShip } from "./Ship";
 
-export enum ERole {
-  Opponent = "opponent",
-  Creator = "creator"
-}
 export interface IPlayer {
   name: string;
   board: IBoard;
   fleet: IShip[];
   allShipsDestroyed: boolean;
   guessedSpaces: Map<string, EPointStatus>;
-  role: ERole
-  placeShip(ship: IBaseShip, location: Location): void;
-  receiveGuess(location: Location): EPointStatus;
-  makeGuess(location: Location, opponent: IPlayer): ITurn;
+  role: IRole
+  placeShip(ship: IBaseShip, location: Coordinate): void;
+  receiveGuess(location: Coordinate): EPointStatus;
+  makeGuess(location: Coordinate, opponent: IPlayer): ITurn;
 }
 

@@ -4,16 +4,15 @@ import { useLocation, useParams } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import initPlayerPoints from '../../playerPointsData.json';
 import Board from '../components/Board';
-import { EAppStep } from '../../domain/models/Game';
 import ShipsPlacement from '../components/Ship/ShipsPlacement';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 import { Location } from '../../domain/models/Location'
-
 import socket from '../../infra/services/socket'
 import { EShipOrientation, ShipData } from '../../domain/models/Ship';
 import { IPoint } from '../../domain/models/Point';
-
 import { GameContext } from '../../contexts/gameContext'
+import { Coordinate } from '../../domain/valueObjects/Coordinate';
+import { EAppStep } from '../../domain/enums/AppStep';
 
 const initialShipsToPlace: ShipData[] = [
   { size: 2, name: 'Destroyer', orientation: EShipOrientation.Horizontal },
@@ -84,7 +83,7 @@ function BoardGamePage() {
     }
   };
 
-  const handleGuess = (location: Location): void => {
+  const handleGuess = (location: Coordinate): void => {
     alert('Guessing');
   };
 
@@ -110,6 +109,11 @@ function BoardGamePage() {
     setShipsToPlace(updatedFleet);
     setActiveShipBeingPlaced(null);
   };
+
+  const readyToPlay = (): void => {
+    socket.emit('IsReadyToPlay')
+    setStep(EAppStep.Waiting)
+  }
 
   return (
     <main>
@@ -142,6 +146,7 @@ function BoardGamePage() {
                   />
                 )}
               </div>
+              <button onClick={() => readyToPlay()}>Ready</button>
             </div>
           ) ||
           step === EAppStep.Guessing && (
@@ -164,7 +169,11 @@ function BoardGamePage() {
                 />
               </div>
             </div>
+          ) ||
+          step === EAppStep.Waiting && (
+            <h2>Waiting your opponent...</h2>
           )
+
         }
       </div>
     </main>

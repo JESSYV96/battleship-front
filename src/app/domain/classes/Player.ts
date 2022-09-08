@@ -1,7 +1,4 @@
-import { ERole } from '../models/Player'
-
 import { Ship } from './Ship'
-
 import { EShipOrientation, EShipType } from '../models/Ship'
 import type { IBoard } from '../models/Board'
 import type { IBaseShip, IShip } from '../models/Ship'
@@ -9,7 +6,8 @@ import type { IPlayer } from '../models/Player'
 import type { IPoint } from '../models/Point'
 import type { ITurn } from '../models/Turn'
 import type { Location } from '../models/Location'
-import { EPointStatus } from '../models/Point'
+import { EPointStatus } from '../enums/PointStatus'
+import { IRole } from '../models/Game'
 
 class Player implements IPlayer {
 	public name: string
@@ -23,9 +21,9 @@ class Player implements IPlayer {
 	]
 	public allShipsDestroyed: boolean = false
 	public guessedSpaces: Map<string, EPointStatus> = new Map()
-  public role: ERole
+  public role: IRole
 
-	constructor(name: string, board: IBoard, role: ERole) {
+	constructor(name: string, board: IBoard, role: IRole) {
 		this.name = name
 		this.board = board
     this.role = role

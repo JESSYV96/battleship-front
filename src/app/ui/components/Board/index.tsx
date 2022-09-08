@@ -58,31 +58,18 @@
 
 // export default Board;
 
-import { EAppStep } from '../../../domain/models/Game';
+import { EAppStep } from '../../../domain/enums/AppStep';
+import { EPointStatus } from '../../../domain/enums/PointStatus';
 import { IPoint } from '../../../domain/models/Point';
+import { Coordinate } from '../../../domain/valueObjects/Coordinate';
 import { Table } from './style';
-
-import './Board.styles.css'
-
-export enum EPointStatus {
-  Hit = 'Hit',
-  Miss = 'Miss',
-  Ship = 'Ship',
-  Empty = 'Empty',
-  Sunk = 'Sunk',
-}
-
-export type Location = {
-  x: number;
-  y: number;
-};
 
 interface BoardProps {
   variant: 'player' | 'opponent';
   ocean: IPoint[][] | null;
   step: EAppStep;
-  onPlaceShip(location: Location): void;
-  onGuess(location: Location): void;
+  onPlaceShip(location: Coordinate): void;
+  onGuess(location: Coordinate): void;
 }
 
 const Board: React.FC<BoardProps> = ({

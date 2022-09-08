@@ -1,23 +1,7 @@
-import type {Location} from './Location'
-
-/**
- * Points
- */
+import { EPointStatus } from "../enums/PointStatus"
+import { Coordinate } from "../valueObjects/Coordinate"
 export interface IPoint {
-	location: Location
+	location: Coordinate
 	status: EPointStatus
 	updateStatus(status: EPointStatus): void
 }
-
-
-export enum EPointStatus {
-  Hit = 'Hit',
-  Miss = 'Miss',
-  Ship = 'Ship',
-  Empty = 'Empty',
-  Sunk = 'Sunk',
-}
-
-
-
-

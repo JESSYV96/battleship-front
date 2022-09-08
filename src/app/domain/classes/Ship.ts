@@ -1,5 +1,6 @@
-import { EPointStatus, IPoint } from '../models/Point'
+import { IPoint } from '../models/Point'
 import { EShipOrientation, EShipType, IShip } from '../models/Ship'
+import { EPointStatus } from '../enums/PointStatus'
 
 export class Ship implements IShip {
 	public type: EShipType

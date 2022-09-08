@@ -1,10 +1,10 @@
+import { EPointStatus } from '../enums/PointStatus';
+import { Coordinate } from '../valueObjects/Coordinate';
 import { IBoard } from './Board';
 import { IPlayer } from './Player';
 import { ITurn } from './Turn';
 
-/**
- * Game
- */
+export type IRole = "opponent" | "player"
 
 export enum EAppStep {
   Intro,

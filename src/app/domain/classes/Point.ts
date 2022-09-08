@@ -1,4 +1,5 @@
-import { IPoint, EPointStatus } from '../models/Point'
+import { IPoint } from '../models/Point'
+import { EPointStatus } from '../enums/PointStatus'
 import { Location } from '../models/Location'
 
 class Point implements IPoint {

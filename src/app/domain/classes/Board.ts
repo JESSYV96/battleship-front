@@ -3,7 +3,7 @@ import Point from './Point'
 import type { IBoard } from '../models/Board'
 import type { IPoint } from '../models/Point'
 import { IShip, EShipOrientation } from '../models/Ship'
-import { EPointStatus } from '../models/Point' 
+import { EPointStatus } from '../enums/PointStatus'
 
 import type { Location } from '../models/Location'
 
