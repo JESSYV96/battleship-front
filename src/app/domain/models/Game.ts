@@ -1,6 +1,7 @@
+import { EPointStatus } from '../enums/PointStatus';
+import { Coordinate } from '../valueObjects/Coordinate';
 import { IBoard } from './Board';
 import { IPlayer } from './Player';
-import { PointStatus } from './Point';
 
 /**
  * Game
@@ -8,16 +9,8 @@ import { PointStatus } from './Point';
 export interface ITurn {
   id: number;
   playerName: string;
-  guess: Location;
-  result: PointStatus;
-}
-
-export enum EAppStep {
-  Intro,
-  Placing,
-  Guessing,
-  Ending,
-  HighScores,
+  guess: Coordinate;
+  result: EPointStatus;
 }
 
 export interface IGame {

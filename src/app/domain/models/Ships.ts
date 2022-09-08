@@ -1,8 +1,5 @@
 import { IPoint } from './Point';
 
-/**
- * Ships
- */
 export type ShipType =
   | 'Destroyer'
   | 'Submarine'

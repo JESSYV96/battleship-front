@@ -1,22 +1,7 @@
-/**
- * Location
- */
- export type Location = {
-	x: number,
-	y: number,
-}
-
-/**
- * Points
- */
+import { EPointStatus } from "../enums/PointStatus"
+import { Coordinate } from "../valueObjects/Coordinate"
 export interface IPoint {
-	location: Location
-	status: PointStatus
-	updateStatus(status: PointStatus): void
+	location: Coordinate
+	status: EPointStatus
+	updateStatus(status: EPointStatus): void
 }
-
-// Union (enum) for point statuses
-export type PointStatus = 'Sunk' | 'Hit' | 'Miss' | 'Ship' | 'Empty'
-
-
-
