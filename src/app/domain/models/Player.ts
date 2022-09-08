@@ -1,3 +1,4 @@
+
 import { IBoard } from "./Board";
 import { ITurn } from "./Game";
 import { PointStatus } from "./Point";
@@ -15,4 +16,9 @@ export interface IPlayer {
   placeShip(ship: IBaseShip, location: Location): void;
   receiveGuess(location: Location): PointStatus;
   makeGuess(location: Location, opponent: IPlayer): ITurn;
+}
+
+export type Player = {
+    name: string
+    role: '' | "opponent" | "creator"
 }
