@@ -12,7 +12,9 @@ function WaitingForJoin() {
 
     useEffect(() => {
         socket.on('connect', () => { })
-        socket.emit('joinGame', params.gameId, (opponent: IPlayer) => {
+        // The Iplayer interface not sync with the API, that why I set any type
+        socket.emit('joinGame', params.gameId, (opponent: any) => {
+            console.log(opponent)
             setPlayer(opponent)
         })
         if (player) {
