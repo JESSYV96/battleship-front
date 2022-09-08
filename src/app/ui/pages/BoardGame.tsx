@@ -111,8 +111,17 @@ function BoardGamePage() {
   };
 
   const readyToPlay = (): void => {
-    socket.emit('IsReadyToPlay')
-    setStep(EAppStep.Waiting)
+    socket.emit('isPlayerReadyToPlay', params.gameId, player.name, true)
+    //setStep(EAppStep.Waiting)
+    socket.on("isPlayerReadyToPlayToClient", (playerName, isOpponentReady) => {
+      console.log("mabite");
+      console.log(playerName, "playerName");
+      console.log(isOpponentReady, "isOpponentReady");
+    });
+
+    // socket.on("isGameReadyToStart", isGameReady => {
+    //   console.log(isGameReady, "Gameready");
+    // });
   }
 
   return (
