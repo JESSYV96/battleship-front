@@ -1,6 +1,9 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IPlayer } from '../../domain/models/Player';
 import { uuidv4 } from '@firebase/util';
 import React, { useEffect } from 'react'
-
 import { generatePath, useNavigate } from 'react-router-dom';
 import { Player } from '../../domain/models/Player';
 import socket from '../../infra/services/socket';
@@ -26,7 +29,7 @@ function HomePage() {
       <h1>Battleship</h1>
       <button onClick={() => createNewGame()}>Play</button>
     </main>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;
