@@ -4,21 +4,15 @@ import { ITurn } from "./Game";
 import { PointStatus } from "./Point";
 import { IBaseShip, IShip } from "./Ships";
 
-/**
- * Players
- */
 export interface IPlayer {
   name: string;
   board: IBoard;
   fleet: IShip[];
   allShipsDestroyed: boolean;
   guessedSpaces: Map<string, PointStatus>;
+  role: '' | "opponent" | "creator"
   placeShip(ship: IBaseShip, location: Location): void;
   receiveGuess(location: Location): PointStatus;
   makeGuess(location: Location, opponent: IPlayer): ITurn;
 }
 
-export type Player = {
-    name: string
-    role: '' | "opponent" | "creator"
-}

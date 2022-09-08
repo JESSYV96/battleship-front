@@ -3,13 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import initPlayerPoints from '../../playerPointsData.json';
-import initOpponentPoints from '../../opponentPointsData.json';
 import Board from '../components/Board';
 import { Location, IPoint } from '../../domain/models/Point';
 import { EAppStep } from '../../domain/models/Game';
 import ShipsPlacement from '../components/Ship/ShipsPlacement';
 import { ShipData } from '../../domain/models/Ships';
-import { Player } from '../../domain/models/Player';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 
 import socket from '../../infra/services/socket'
@@ -23,14 +21,11 @@ const initialShipsToPlace: ShipData[] = [
 ];
 
 function BoardGamePage() {
-  const location = useLocation();
-  const player = location.state as IPlayer;
-  
   const params = useParams();
   const location = useLocation();
   const setUpGame = useSetUpGame();
   const [isFullRoom, setIsFullRoom] = useState<boolean>(false)
-  const player = location.state as Player
+  const player = location.state as IPlayer;
 
   // Game State
   const [step, setStep] = useState<EAppStep>(EAppStep.Placing);
@@ -52,12 +47,12 @@ function BoardGamePage() {
     setPlayerBoardData(initPlayerPoints as unknown as IPoint[][]);
     setOppBoardData(initPlayerPoints as unknown as IPoint[][]);
   }, []);
-  
+
   useEffect(() => {
-        socket.on('startGame', (isFullRoom: boolean) => {
-            setIsFullRoom(isFullRoom);
-        })
-    }, [isFullRoom])
+    socket.on('startGame', (isFullRoom: boolean) => {
+      setIsFullRoom(isFullRoom);
+    })
+  }, [isFullRoom])
 
   const handlePlaceShipOnBoard = (location: Location): void => {
     alert('Placing');
@@ -93,57 +88,58 @@ function BoardGamePage() {
   return (
     <main>
       <div style={{ display: 'flex', gap: '20px' }}>
-       {isFullRoom
-                ? <h1>Bienvenue {player.name}, "BoardGame"</h1>
-                : <h1>En attente de l'adversaire  {(process.env.REACT_APP_BASE_URL_APP && params.gameId) && setUpGame.getJoinGameLink(process.env.REACT_APP_BASE_URL_APP, params.gameId)}</h1>
-            }
-        {step === EAppStep.Placing && (
-          <div className="grid">
-            <h2>Placing</h2>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <Board
-                variant="player"
-                ocean={playerBoardData}
-                step={step}
-                onPlaceShip={handlePlaceShipOnBoard}
-                onGuess={handleGuess}
-              />
-              {shipsPlaced ? (
-                <button onClick={() => console.log('Ships Placed')}>
-                  Confirm Placement
-                </button>
-              ) : (
-                <ShipsPlacement
-                  ships={shipsToPlace}
-                  activeShipToPlace={activeShipBeingPlaced}
-                  onShipClick={handleShipClick}
-                  onChangeOrientation={handleSwapShipOrientation}
+        {!isFullRoom
+          ?
+          <h1>En attente de l'adversaire  {(process.env.REACT_APP_BASE_URL_APP && params.gameId) && setUpGame.getJoinGameLink(process.env.REACT_APP_BASE_URL_APP, params.gameId)}</h1>
+          :
+          step === EAppStep.Placing && (
+            <div className="grid">
+              <h2>Placing, {player.name}</h2>
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <Board
+                  variant="player"
+                  ocean={playerBoardData}
+                  step={step}
+                  onPlaceShip={handlePlaceShipOnBoard}
+                  onGuess={handleGuess}
                 />
-              )}
+                {shipsPlaced ? (
+                  <button onClick={() => console.log('Ships Placed')}>
+                    Confirm Placement
+                  </button>
+                ) : (
+                  <ShipsPlacement
+                    ships={shipsToPlace}
+                    activeShipToPlace={activeShipBeingPlaced}
+                    onShipClick={handleShipClick}
+                    onChangeOrientation={handleSwapShipOrientation}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-        )}
-        {step === EAppStep.Guessing && (
-          <div className="grid">
-            <h2>Guessing</h2>
-            <div className="col col-8">
-              <Board
-                variant="player"
-                ocean={playerBoardData}
-                step={step}
-                onPlaceShip={handlePlaceShipOnBoard}
-                onGuess={handleGuess}
-              />
-              <Board
-                variant="player"
-                ocean={oppBoardData}
-                step={step}
-                onPlaceShip={handlePlaceShipOnBoard}
-                onGuess={handleGuess}
-              />
+          ) ||
+          step === EAppStep.Guessing && (
+            <div className="grid">
+              <h2>Guessing, {player.name}</h2>
+              <div className="col col-8">
+                <Board
+                  variant="player"
+                  ocean={playerBoardData}
+                  step={step}
+                  onPlaceShip={handlePlaceShipOnBoard}
+                  onGuess={handleGuess}
+                />
+                <Board
+                  variant="player"
+                  ocean={oppBoardData}
+                  step={step}
+                  onPlaceShip={handlePlaceShipOnBoard}
+                  onGuess={handleGuess}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
       </div>
     </main>
   );
