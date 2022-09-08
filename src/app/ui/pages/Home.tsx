@@ -1,23 +1,32 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { Player } from '../../domain/models/Player';
-import { socket } from '../../infra/services/socket';
+
+import React, { useEffect } from 'react'
+import { uuidv4 } from '@firebase/util';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { IPlayer } from '../../domain/models/Player';
+import socket from '../../infra/services/socket';
 
 function HomePage() {
   const navigate = useNavigate();
-  const [player, setPlayer] = useState<Player>({ username: '' })
 
-  socket.on('connect', () => {
-    console.log(socket.id);
-  })
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(socket.id);
+    })
+  }, [])
+
+  const createNewGame = () => {
+    const gameId: string = uuidv4()
+    socket.emit('createGame', gameId, (player: IPlayer) => {
+      navigate(generatePath("/games/:gameId", { gameId }), { state: player })
+    });
+  }
 
   return (
     <main>
       <h1>Battleship</h1>
-      <input type="text" onChange={(e) => setPlayer({ username: e.target.value })} />
-      <button onClick={() => navigate('/game', { state: player})}>Play</button>
+      <button onClick={() => createNewGame()}>Play</button>
     </main>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;
