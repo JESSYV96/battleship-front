@@ -5,8 +5,10 @@ import { generatePath, useNavigate } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import socket from '../../infra/services/socket';
 
+
 function HomePage() {
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -24,7 +26,7 @@ function HomePage() {
   return (
     <main>
       <h1>Battleship</h1>
-      <button onClick={() => createNewGame()}>Play</button>
+      <button onClick={createNewGame}>Play</button>
     </main>
   );
 }

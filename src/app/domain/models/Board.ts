@@ -1,5 +1,6 @@
+import { Location } from "./Location";
 import { IPoint } from "./Point";
-import { IShip } from "./Ships";
+import { IShip } from "./Ship";
 
 
 /**

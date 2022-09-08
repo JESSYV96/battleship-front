@@ -1,22 +1,23 @@
-/**
- * Location
- */
- export type Location = {
-	x: number,
-	y: number,
-}
+import type {Location} from './Location'
 
 /**
  * Points
  */
 export interface IPoint {
 	location: Location
-	status: PointStatus
-	updateStatus(status: PointStatus): void
+	status: EPointStatus
+	updateStatus(status: EPointStatus): void
 }
 
-// Union (enum) for point statuses
-export type PointStatus = 'Sunk' | 'Hit' | 'Miss' | 'Ship' | 'Empty'
+
+export enum EPointStatus {
+  Hit = 'Hit',
+  Miss = 'Miss',
+  Ship = 'Ship',
+  Empty = 'Empty',
+  Sunk = 'Sunk',
+}
+
 
 
 
