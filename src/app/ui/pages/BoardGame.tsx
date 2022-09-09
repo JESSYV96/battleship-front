@@ -8,7 +8,6 @@ import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 import { Location } from '../../domain/models/Location';
 import socket from '../../infra/services/socket';
-import { EShipOrientation, ShipData } from '../../domain/models/Ship';
 import { IPoint } from '../../domain/models/Point';
 import { GameContext } from '../../contexts/gameContext';
 import { Coordinate } from '../../domain/valueObjects/Coordinate';
@@ -18,19 +17,19 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const initialShipsToPlace: ShipData[] = [
-  { size: 2, name: 'Destroyer', orientation: EShipOrientation.Horizontal },
-  { size: 3, name: 'Submarine', orientation: EShipOrientation.Horizontal },
-  { size: 3, name: 'Cruiser', orientation: EShipOrientation.Horizontal },
-  { size: 4, name: 'Battleship', orientation: EShipOrientation.Horizontal },
-  { size: 5, name: 'Carrier', orientation: EShipOrientation.Horizontal },
+  { size: 2, name: 'Destroyer', orientation: 'horizontal' },
+  { size: 3, name: 'Submarine', orientation: 'horizontal' },
+  { size: 3, name: 'Cruiser', orientation: 'horizontal' },
+  { size: 4, name: 'Battleship', orientation: 'horizontal' },
+  { size: 5, name: 'Carrier', orientation: 'horizontal' },
 ];
 
 function BoardGamePage() {
   const params = useParams();
   const location = useLocation();
   const setUpGame = useSetUpGame();
-  const [isFullRoom, setIsFullRoom] = useState<boolean>(false)
-  const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer)
+  const [isFullRoom, setIsFullRoom] = useState<boolean>(false);
+  const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer);
 
   // Game State
   const [step, setStep] = useState<EAppStep>(EAppStep.Placing);
@@ -103,9 +102,9 @@ function BoardGamePage() {
 
     const updatedFleet: ShipData[] = shipsToPlace.map((s) => {
       if (s.name === ship.name) {
-        return s.orientation === EShipOrientation.Horizontal
-          ? { ...s, orientation: EShipOrientation.Vertical }
-          : { ...s, orientation: EShipOrientation.Horizontal };
+        return s.orientation === 'horizontal'
+          ? { ...s, orientation: 'vertical' }
+          : { ...s, orientation: 'horizontal' };
       } else {
         return s;
       }
@@ -116,18 +115,23 @@ function BoardGamePage() {
 
   const readyToPlay = (e: any): void => {
     e.preventDefault();
-    setPlayer({ ...player, isReadyToPlay: true })
-    socket.emit('isPlayerReadyToPlay', params.gameId, player.name, player.isReadyToPlay)
-    setStep(EAppStep.Waiting)
-  }
+    setPlayer({ ...player, isReadyToPlay: true });
+    socket.emit(
+      'isPlayerReadyToPlay',
+      params.gameId,
+      player.name,
+      player.isReadyToPlay
+    );
+    setStep(EAppStep.Waiting);
+  };
 
-  socket.on("isPlayerReadyToPlayToClient", (playerName, isOpponentReady) => {
-    console.log(isOpponentReady, "isOpponentReady");
-    toast.warn(`${playerName} is ready`)
+  socket.on('isPlayerReadyToPlayToClient', (playerName, isOpponentReady) => {
+    console.log(isOpponentReady, 'isOpponentReady');
+    toast.warn(`${playerName} is ready`);
   });
 
-  socket.on("isGameReadyToStart", isGameReady => {
-    toast.info('The game is ready to start')
+  socket.on('isGameReadyToStart', (isGameReady) => {
+    toast.info('The game is ready to start');
   });
 
   return (
@@ -191,11 +195,9 @@ function BoardGamePage() {
                 />
               </div>
             </div>
-          ) ||
-          step === EAppStep.Waiting && (
-            <h2>Waiting your opponent...</h2>
-          )
-        }
+          )) ||
+          (step === EAppStep.Waiting && <h2>Waiting your opponent...</h2>)
+        )}
         <ToastContainer />
       </div>
     </main>

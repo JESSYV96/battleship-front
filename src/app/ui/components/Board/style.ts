@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import './Board.styles.css';
 
 type Props = {
   variant: 'player' | 'opponent';
@@ -22,7 +23,7 @@ export const BoardTitle = styled.h2<Props>`
 
 export const Table = styled.table<Props>`
   border-collapse: collapse;
-  background-color: black;
+  /* background-color: black; */
   border: 4px solid ${({ variant }) => (variant === 'player' ? 'green' : 'red')};
   th,
   td {
