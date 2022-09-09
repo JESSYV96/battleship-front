@@ -13,6 +13,7 @@ function HomePage() {
   const createNewGame = () => {
     const gameId: string = uuidv4()
     socket.on('connect', () => {})
+    socket.on('connect', () => {})
     socket.emit('createGame', gameId, (player: IPlayer) => {
       navigate(generatePath("/games/:gameId", { gameId }), { state: player })
     });

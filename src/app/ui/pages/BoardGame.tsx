@@ -7,11 +7,11 @@ import ShipsPlacement from '../components/Ship/ShipsPlacement';
 import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 import { Location } from '../../domain/models/Location';
-import socket from '../../infra/services/socket';
 import { IPoint } from '../../domain/models/Point';
 import { GameContext } from '../../contexts/gameContext';
 import { Coordinate } from '../../domain/valueObjects/Coordinate';
 import { EAppStep } from '../../domain/enums/AppStep';
+import socket from '../../infra/services/socket';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
