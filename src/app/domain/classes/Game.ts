@@ -1,7 +1,7 @@
 
 import type { IBoard } from '../models/Board'
 import type { IGame } from '../models/Game'
-import { ERole, IPlayer } from '../models/Player'
+import { IPlayer } from '../models/Player'
 import { ITurn } from '../models/Turn'
 import Board from './Board'
 import Player from './Player'
@@ -17,8 +17,8 @@ export class Game implements IGame {
 
 	constructor() {
 		// Setup player (could be UI generated)
-		const player = new Player('Player', this.playerBoard, ERole.Creator)
-		const opponent = new Player('Opponent', this.opponentBoard, ERole.Opponent)
+		const player = new Player('Player', this.playerBoard, "player")
+		const opponent = new Player('Opponent', this.opponentBoard, "opponent")
 		this.player = player
 		this.opponent = opponent
 	}

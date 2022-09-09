@@ -1,35 +1,35 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import initPlayerPoints from '../../playerPointsData.json';
 import Board from '../components/Board';
-import { EAppStep } from '../../domain/models/Game';
 import ShipsPlacement from '../components/Ship/ShipsPlacement';
+import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
-import { Location } from '../../domain/models/Location'
-
-import socket from '../../infra/services/socket'
-import { EShipOrientation, ShipData } from '../../domain/models/Ship';
+import { Location } from '../../domain/models/Location';
 import { IPoint } from '../../domain/models/Point';
+import { GameContext } from '../../contexts/gameContext';
+import { Coordinate } from '../../domain/valueObjects/Coordinate';
+import { EAppStep } from '../../domain/enums/AppStep';
+import socket from '../../infra/services/socket';
 
-import { GameContext } from '../../contexts/gameContext'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const initialShipsToPlace: ShipData[] = [
-  { size: 2, name: 'Destroyer', orientation: EShipOrientation.Horizontal },
-  { size: 3, name: 'Submarine', orientation: EShipOrientation.Horizontal },
-  { size: 3, name: 'Cruiser', orientation: EShipOrientation.Horizontal },
-  { size: 4, name: 'Battleship', orientation: EShipOrientation.Horizontal },
-  { size: 5, name: 'Carrier', orientation: EShipOrientation.Horizontal },
+  { size: 2, name: 'Destroyer', orientation: 'horizontal' },
+  { size: 3, name: 'Submarine', orientation: 'horizontal' },
+  { size: 3, name: 'Cruiser', orientation: 'horizontal' },
+  { size: 4, name: 'Battleship', orientation: 'horizontal' },
+  { size: 5, name: 'Carrier', orientation: 'horizontal' },
 ];
-
 
 function BoardGamePage() {
   const params = useParams();
   const location = useLocation();
   const setUpGame = useSetUpGame();
-  const [isFullRoom, setIsFullRoom] = useState<boolean>(false)
-  const player = location.state as IPlayer;
+  const [isFullRoom, setIsFullRoom] = useState<boolean>(false);
+  const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer);
 
   // Game State
   const [step, setStep] = useState<EAppStep>(EAppStep.Placing);
@@ -48,7 +48,7 @@ function BoardGamePage() {
   const [oppBoardData, setOppBoardData] = useState<IPoint[][] | null>(null);
   const [ctaText, setCtaText] = useState<string>('');
 
-  const gameContext = React.useContext(GameContext)
+  const gameContext = React.useContext(GameContext);
 
   useEffect(() => {
     setPlayerBoardData(initPlayerPoints as unknown as IPoint[][]);
@@ -58,33 +58,35 @@ function BoardGamePage() {
   useEffect(() => {
     socket.on('startGame', (isFullRoom: boolean) => {
       setIsFullRoom(isFullRoom);
-    })
-  }, [isFullRoom])
+    });
+  }, [isFullRoom]);
 
   const handlePlaceShipOnBoard = (location: Location): void => {
     // alert('Placing');
     // setPlacementError(null)
-    if (!activeShipBeingPlaced) return
+    if (!activeShipBeingPlaced) return;
     // await post('/player/place', { ship: activeShipBeingPlaced, location: location })
 
     // Update board
     // const res = await get('/boards')
-    gameContext.game?.player.placeShip(activeShipBeingPlaced, location)
+    gameContext.game?.player.placeShip(activeShipBeingPlaced, location);
     // setPlayerBoardData(res.playerBoard)
 
     // Update ships to place
-    const shipsLeftToPlace = shipsToPlace.filter(s => s.name !== activeShipBeingPlaced.name)
-    setShipsToPlace(shipsLeftToPlace)
-    setActiveShipBeingPlaced(null)
+    const shipsLeftToPlace = shipsToPlace.filter(
+      (s) => s.name !== activeShipBeingPlaced.name
+    );
+    setShipsToPlace(shipsLeftToPlace);
+    setActiveShipBeingPlaced(null);
 
     // All ships have been placed, start guessing
     if (shipsLeftToPlace.length === 0) {
-      setShipsPlaced(true)
-      setCtaText("Great! Now it's time to search for your opponents ships.")
+      setShipsPlaced(true);
+      setCtaText("Great! Now it's time to search for your opponents ships.");
     }
   };
 
-  const handleGuess = (location: Location): void => {
+  const handleGuess = (location: Coordinate): void => {
     alert('Guessing');
   };
 
@@ -100,9 +102,9 @@ function BoardGamePage() {
 
     const updatedFleet: ShipData[] = shipsToPlace.map((s) => {
       if (s.name === ship.name) {
-        return s.orientation === EShipOrientation.Horizontal
-          ? { ...s, orientation: EShipOrientation.Vertical }
-          : { ...s, orientation: EShipOrientation.Horizontal };
+        return s.orientation === 'horizontal'
+          ? { ...s, orientation: 'vertical' }
+          : { ...s, orientation: 'horizontal' };
       } else {
         return s;
       }
@@ -111,14 +113,47 @@ function BoardGamePage() {
     setActiveShipBeingPlaced(null);
   };
 
+  const readyToPlay = (e: any): void => {
+    e.preventDefault();
+    setPlayer({ ...player, isReadyToPlay: true });
+    socket.emit(
+      'isPlayerReadyToPlay',
+      params.gameId,
+      player.name,
+      player.isReadyToPlay
+    );
+    setStep(EAppStep.Waiting);
+  };
+
+  socket.on('isPlayerReadyToPlayToClient', (playerName, isOpponentReady) => {
+    toast.warn(`${playerName} is ready`);
+  });
+
+  socket.on('isGameReadyToStart', (isGameReady) => {
+    const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
+    toast.promise(
+      resolveAfter3Sec,
+      {
+        pending: 'La partie va bientôt commencer'
+      }
+    ).then(() => setStep(EAppStep.Guessing))
+  });
+
   return (
     <main>
       <div style={{ display: 'flex', gap: '20px' }}>
-        {!isFullRoom
-          ?
-          <h1>En attente de l'adversaire  {(process.env.REACT_APP_BASE_URL_APP && params.gameId) && setUpGame.getJoinGameLink(process.env.REACT_APP_BASE_URL_APP, params.gameId)}</h1>
-          :
-          step === EAppStep.Placing && (
+        {!isFullRoom ? (
+          <h1>
+            En attente de l'adversaire{' '}
+            {process.env.REACT_APP_BASE_URL_APP &&
+              params.gameId &&
+              setUpGame.getJoinGameLink(
+                process.env.REACT_APP_BASE_URL_APP,
+                params.gameId
+              )}
+          </h1>
+        ) : (
+          (step === EAppStep.Placing && (
             <div className="grid">
               <h2>Placing, {player.name}</h2>
               <div style={{ display: 'flex', gap: '20px' }}>
@@ -130,7 +165,7 @@ function BoardGamePage() {
                   onGuess={handleGuess}
                 />
                 {shipsPlaced ? (
-                  <button onClick={() => console.log('Ships Placed')}>
+                  <button onClick={(e) => readyToPlay(e)}>
                     Confirm Placement
                   </button>
                 ) : (
@@ -143,8 +178,8 @@ function BoardGamePage() {
                 )}
               </div>
             </div>
-          ) ||
-          step === EAppStep.Guessing && (
+          )) ||
+          (step === EAppStep.Guessing && (
             <div className="grid">
               <h2>Guessing, {player.name}</h2>
               <div className="col col-8">
@@ -164,8 +199,10 @@ function BoardGamePage() {
                 />
               </div>
             </div>
-          )
-        }
+          )) ||
+          (step === EAppStep.Waiting && <h2>Waiting your opponent...</h2>)
+        )}
+        <ToastContainer />
       </div>
     </main>
   );
