@@ -1,4 +1,3 @@
-
 import { ShipData } from '../../../domain/models/Ship';
 import './Ship.styles.css';
 

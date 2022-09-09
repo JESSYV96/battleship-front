@@ -1,28 +1,21 @@
 import { IPoint } from './Point';
 
-/**
- * Ships
- */
- export enum EShipType {
-	Destroyer = 'Destroyer',
-	Submarine = 'Submarine',
-	Cruiser = 'Cruiser',
-	Battleship = 'Battleship',
-	Carrier = 'Carrier',
-}
+export type ShipType =
+  | 'Destroyer'
+  | 'Submarine'
+  | 'Cruiser'
+  | 'Battleship'
+  | 'Carrier';
 
-export enum EShipOrientation {
-  Horizontal = 'horizontal',
-  Vertical = 'vertical'
-}
+export type ShipOrientation = 'horizontal' | 'vertical';
 
 export interface IBaseShip {
   name: string;
-  orientation: EShipOrientation;
+  orientation: ShipOrientation;
 }
 
 export interface IShip extends IBaseShip {
-  type: EShipType;
+  type: ShipType;
   spacesOccupied: IPoint[];
   size: number;
   isSunk(): boolean;
@@ -32,5 +25,5 @@ export interface IShip extends IBaseShip {
 export type ShipData = {
   name: string;
   size: number;
-  orientation: EShipOrientation;
+  orientation: 'horizontal' | 'vertical';
 };
