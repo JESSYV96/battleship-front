@@ -10,14 +10,9 @@ function HomePage() {
   const navigate = useNavigate();
   
 
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log(socket.id);
-    })
-  }, [])
-
   const createNewGame = () => {
     const gameId: string = uuidv4()
+    socket.on('connect', () => {})
     socket.emit('createGame', gameId, (player: IPlayer) => {
       navigate(generatePath("/games/:gameId", { gameId }), { state: player })
     });
