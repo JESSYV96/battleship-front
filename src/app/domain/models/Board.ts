@@ -1,6 +1,6 @@
 import { Coordinate } from "../valueObjects/Coordinate";
 import { IPoint } from "./Point";
-import { IShip } from "./Ships";
+import { IShip } from "./Ship";
 
 
 export interface IBoard {

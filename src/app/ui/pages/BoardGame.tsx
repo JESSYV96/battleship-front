@@ -6,7 +6,7 @@ import initPlayerPoints from '../../playerPointsData.json';
 import Board from '../components/Board';
 import { IPoint } from '../../domain/models/Point';
 import ShipsPlacement from '../components/Ship/ShipsPlacement';
-import { ShipData } from '../../domain/models/Ships';
+import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 
 import socket from '../../infra/services/socket'

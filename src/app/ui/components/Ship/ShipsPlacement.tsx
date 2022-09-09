@@ -1,4 +1,4 @@
-import { ShipData } from '../../../domain/models/Ships';
+import { ShipData } from '../../../domain/models/Ship';
 import './Ship.styles.css';
 
 interface ShipsPlacementProps {
