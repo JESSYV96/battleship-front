@@ -11,7 +11,7 @@ import reportWebVitals from './reportWebVitals';
 
 import HomePage from './app/ui/pages/Home';
 import BoardGamePage from './app/ui/pages/BoardGame';
-import WaitingForJoin from './app/ui/pages/WaitingForJoin';
+import JoinGame from './app/ui/pages/JoinGame';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDqQ3blEKvMKH7snySU42sxe5Hgbug_v-g",
@@ -34,7 +34,7 @@ root.render(
         <Route path="/" element={<HomePage />} />
         <Route path="games">
           <Route path=":gameId" element={<BoardGamePage />} />
-          <Route path=":gameId/join" element={<WaitingForJoin />} />
+          <Route path=":gameId/join" element={<JoinGame />} />
         </Route>
       </Routes>
     </BrowserRouter>

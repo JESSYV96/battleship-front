@@ -4,15 +4,12 @@ import { IPlayer } from '../../domain/models/Player';
 
 import socket from '../../infra/services/socket'
 
-function WaitingForJoin() {
+function JoinGame() {
     const [player, setPlayer] = useState<IPlayer>()
     const params = useParams();
     const navigate = useNavigate();
 
-
     useEffect(() => {
-        socket.on('connect', () => { })
-        // The Iplayer interface not sync with the API, that why I set any type
         socket.emit('joinGame', params.gameId, (opponent: IPlayer) => {
             setPlayer(opponent)
         })
@@ -22,11 +19,9 @@ function WaitingForJoin() {
 
     }, [navigate, player, params.gameId])
 
-
-
     return (
         <></>
     )
 }
 
-export default WaitingForJoin
+export default JoinGame
