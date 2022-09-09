@@ -126,12 +126,17 @@ function BoardGamePage() {
   };
 
   socket.on('isPlayerReadyToPlayToClient', (playerName, isOpponentReady) => {
-    console.log(isOpponentReady, 'isOpponentReady');
     toast.warn(`${playerName} is ready`);
   });
 
   socket.on('isGameReadyToStart', (isGameReady) => {
-    toast.info('The game is ready to start');
+    const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
+    toast.promise(
+      resolveAfter3Sec,
+      {
+        pending: 'La partie va bientôt commencer'
+      }
+    ).then(() => setStep(EAppStep.Guessing))
   });
 
   return (
@@ -160,7 +165,7 @@ function BoardGamePage() {
                   onGuess={handleGuess}
                 />
                 {shipsPlaced ? (
-                  <button onClick={() => console.log('Ships Placed')}>
+                  <button onClick={(e) => readyToPlay(e)}>
                     Confirm Placement
                   </button>
                 ) : (
@@ -172,7 +177,6 @@ function BoardGamePage() {
                   />
                 )}
               </div>
-              <button onClick={(e) => readyToPlay(e)}>Ready</button>
             </div>
           )) ||
           (step === EAppStep.Guessing && (
