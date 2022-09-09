@@ -13,6 +13,9 @@ import socket from '../../infra/services/socket'
 import { Coordinate } from '../../domain/valueObjects/Coordinate';
 import { EAppStep } from '../../domain/enums/AppStep';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const initialShipsToPlace: ShipData[] = [
   { size: 2, name: 'Destroyer', orientation: 'horizontal' },
   { size: 3, name: 'Submarine', orientation: 'horizontal' },
@@ -26,7 +29,7 @@ function BoardGamePage() {
   const location = useLocation();
   const setUpGame = useSetUpGame();
   const [isFullRoom, setIsFullRoom] = useState<boolean>(false)
-  const player = location.state as IPlayer;
+  const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer)
 
   // Game State
   const [step, setStep] = useState<EAppStep>(EAppStep.Placing);
@@ -86,19 +89,21 @@ function BoardGamePage() {
     setActiveShipBeingPlaced(null);
   };
 
-  const readyToPlay = (): void => {
-    socket.emit('isPlayerReadyToPlay', params.gameId, player.name, true)
-    //setStep(EAppStep.Waiting)
-    socket.on("isPlayerReadyToPlayToClient", (playerName, isOpponentReady) => {
-      console.log("mabite");
-      console.log(playerName, "playerName");
-      console.log(isOpponentReady, "isOpponentReady");
-    });
-
-    // socket.on("isGameReadyToStart", isGameReady => {
-    //   console.log(isGameReady, "Gameready");
-    // });
+  const readyToPlay = (e: any): void => {
+    e.preventDefault();
+    setPlayer({ ...player, isReadyToPlay: true })
+    socket.emit('isPlayerReadyToPlay', params.gameId, player.name, player.isReadyToPlay)
+    setStep(EAppStep.Waiting)
   }
+
+  socket.on("isPlayerReadyToPlayToClient", (playerName, isOpponentReady) => {
+    console.log(isOpponentReady, "isOpponentReady");
+    toast.warn(`${playerName} is ready`)
+  });
+
+  socket.on("isGameReadyToStart", isGameReady => {
+    toast.info('The game is ready to start')
+  });
 
   return (
     <main>
@@ -131,7 +136,7 @@ function BoardGamePage() {
                   />
                 )}
               </div>
-              <button onClick={() => readyToPlay()}>Ready</button>
+              <button onClick={(e) => readyToPlay(e)}>Ready</button>
             </div>
           ) ||
           step === EAppStep.Guessing && (
@@ -158,8 +163,8 @@ function BoardGamePage() {
           step === EAppStep.Waiting && (
             <h2>Waiting your opponent...</h2>
           )
-
         }
+        <ToastContainer />
       </div>
     </main>
   );
