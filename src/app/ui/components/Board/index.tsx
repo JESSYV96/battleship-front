@@ -62,6 +62,8 @@ import { EAppStep } from '../../../domain/models/Game';
 import { IPoint } from '../../../domain/models/Point';
 import { Table } from './style';
 
+import './Board.styles.css'
+
 export enum EPointStatus {
   Hit = 'Hit',
   Miss = 'Miss',

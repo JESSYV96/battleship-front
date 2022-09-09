@@ -1,16 +1,10 @@
 import { IBoard } from './Board';
 import { IPlayer } from './Player';
-import { PointStatus } from './Point';
+import { ITurn } from './Turn';
 
 /**
  * Game
  */
-export interface ITurn {
-  id: number;
-  playerName: string;
-  guess: Location;
-  result: PointStatus;
-}
 
 export enum EAppStep {
   Intro,

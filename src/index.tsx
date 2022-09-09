@@ -13,6 +13,8 @@ import HomePage from './app/ui/pages/Home';
 import BoardGamePage from './app/ui/pages/BoardGame';
 import WaitingForJoin from './app/ui/pages/WaitingForJoin';
 
+import { GameContextProvider } from './app/contexts/gameContext'
+
 const firebaseConfig = {
   apiKey: "AIzaSyDqQ3blEKvMKH7snySU42sxe5Hgbug_v-g",
   authDomain: "battleship-6742a.firebaseapp.com",
@@ -29,15 +31,17 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="games">
-          <Route path=":gameId" element={<BoardGamePage />} />
-          <Route path=":gameId/join" element={<WaitingForJoin />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <GameContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="games">
+            <Route path=":gameId" element={<BoardGamePage />} />
+            <Route path=":gameId/join" element={<WaitingForJoin />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </GameContextProvider>
   </React.StrictMode>
 );
 

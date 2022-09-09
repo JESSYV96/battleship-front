@@ -4,21 +4,25 @@ import { useLocation, useParams } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import initPlayerPoints from '../../playerPointsData.json';
 import Board from '../components/Board';
-import { Location, IPoint } from '../../domain/models/Point';
 import { EAppStep } from '../../domain/models/Game';
 import ShipsPlacement from '../components/Ship/ShipsPlacement';
-import { ShipData } from '../../domain/models/Ships';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
+import { Location } from '../../domain/models/Location'
 
 import socket from '../../infra/services/socket'
+import { EShipOrientation, ShipData } from '../../domain/models/Ship';
+import { IPoint } from '../../domain/models/Point';
+
+import { GameContext } from '../../contexts/gameContext'
 
 const initialShipsToPlace: ShipData[] = [
-  { size: 2, name: 'Destroyer', orientation: 'horizontal' },
-  { size: 3, name: 'Submarine', orientation: 'horizontal' },
-  { size: 3, name: 'Cruiser', orientation: 'horizontal' },
-  { size: 4, name: 'Battleship', orientation: 'horizontal' },
-  { size: 5, name: 'Carrier', orientation: 'horizontal' },
+  { size: 2, name: 'Destroyer', orientation: EShipOrientation.Horizontal },
+  { size: 3, name: 'Submarine', orientation: EShipOrientation.Horizontal },
+  { size: 3, name: 'Cruiser', orientation: EShipOrientation.Horizontal },
+  { size: 4, name: 'Battleship', orientation: EShipOrientation.Horizontal },
+  { size: 5, name: 'Carrier', orientation: EShipOrientation.Horizontal },
 ];
+
 
 function BoardGamePage() {
   const params = useParams();
@@ -42,6 +46,9 @@ function BoardGamePage() {
     null
   );
   const [oppBoardData, setOppBoardData] = useState<IPoint[][] | null>(null);
+  const [ctaText, setCtaText] = useState<string>('');
+
+  const gameContext = React.useContext(GameContext)
 
   useEffect(() => {
     setPlayerBoardData(initPlayerPoints as unknown as IPoint[][]);
@@ -55,7 +62,26 @@ function BoardGamePage() {
   }, [isFullRoom])
 
   const handlePlaceShipOnBoard = (location: Location): void => {
-    alert('Placing');
+    // alert('Placing');
+    // setPlacementError(null)
+    if (!activeShipBeingPlaced) return
+    // await post('/player/place', { ship: activeShipBeingPlaced, location: location })
+
+    // Update board
+    // const res = await get('/boards')
+    gameContext.game?.player.placeShip(activeShipBeingPlaced, location)
+    // setPlayerBoardData(res.playerBoard)
+
+    // Update ships to place
+    const shipsLeftToPlace = shipsToPlace.filter(s => s.name !== activeShipBeingPlaced.name)
+    setShipsToPlace(shipsLeftToPlace)
+    setActiveShipBeingPlaced(null)
+
+    // All ships have been placed, start guessing
+    if (shipsLeftToPlace.length === 0) {
+      setShipsPlaced(true)
+      setCtaText("Great! Now it's time to search for your opponents ships.")
+    }
   };
 
   const handleGuess = (location: Location): void => {
@@ -74,9 +100,9 @@ function BoardGamePage() {
 
     const updatedFleet: ShipData[] = shipsToPlace.map((s) => {
       if (s.name === ship.name) {
-        return s.orientation === 'horizontal'
-          ? { ...s, orientation: 'vertical' }
-          : { ...s, orientation: 'horizontal' };
+        return s.orientation === EShipOrientation.Horizontal
+          ? { ...s, orientation: EShipOrientation.Vertical }
+          : { ...s, orientation: EShipOrientation.Horizontal };
       } else {
         return s;
       }
@@ -98,7 +124,7 @@ function BoardGamePage() {
               <div style={{ display: 'flex', gap: '20px' }}>
                 <Board
                   variant="player"
-                  ocean={playerBoardData}
+                  ocean={gameContext.game!.player.board.ocean}
                   step={step}
                   onPlaceShip={handlePlaceShipOnBoard}
                   onGuess={handleGuess}
