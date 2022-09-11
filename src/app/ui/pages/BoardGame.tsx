@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import initPlayerPoints from '../../playerPointsData.json';
@@ -8,10 +8,10 @@ import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 import { Location } from '../../domain/models/Location';
 import { IPoint } from '../../domain/models/Point';
-import { GameContext } from '../../contexts/gameContext';
+import { GameContext } from '../contexts/gameContext';
 import { Coordinate } from '../../domain/valueObjects/Coordinate';
 import { EAppStep } from '../../domain/enums/AppStep';
-import socket from '../../infra/services/socket';
+import socket, { registerToGameSetUpHandlers } from '../../infra/services/socket.io/socket';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,17 +22,13 @@ const initialShipsToPlace: ShipData[] = [
   { size: 3, name: 'Cruiser', orientation: 'horizontal' },
   { size: 4, name: 'Battleship', orientation: 'horizontal' },
   { size: 5, name: 'Carrier', orientation: 'horizontal' },
-];
+]
 
 function BoardGamePage() {
   const params = useParams();
   const location = useLocation();
   const setUpGame = useSetUpGame();
-  const [isFullRoom, setIsFullRoom] = useState<boolean>(false);
   const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer);
-
-  // Game State
-  const [step, setStep] = useState<EAppStep>(EAppStep.Placing);
 
   // Placement states
   const [shipsToPlace, setShipsToPlace] =
@@ -45,21 +41,41 @@ function BoardGamePage() {
   const [playerBoardData, setPlayerBoardData] = useState<IPoint[][] | null>(
     null
   );
-  const [oppBoardData, setOppBoardData] = useState<IPoint[][] | null>(null);
+  const [oppBoardData, setOppBoardData] = useState<IPoint[][] | null>(
+    null
+  );
   const [ctaText, setCtaText] = useState<string>('');
 
-  const gameContext = React.useContext(GameContext);
+  const { game, step, setStep, haveAllPlayersInGame, setHaveAllPlayersInGame } = useContext(GameContext);
 
   useEffect(() => {
     setPlayerBoardData(initPlayerPoints as unknown as IPoint[][]);
     setOppBoardData(initPlayerPoints as unknown as IPoint[][]);
+    return () => {
+      registerToGameSetUpHandlers(socket)
+        .playerReadyToPlay((playerName) => {
+          toast.info(`${playerName} is ready`)
+        })
+
+      registerToGameSetUpHandlers(socket)
+        .gameReadyToStart(() => {
+          const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
+          toast.promise(
+            resolveAfter3Sec,
+            {
+              pending: 'La partie va bientôt commencer'
+            }
+          ).then(() => setStep(EAppStep.Guessing)).catch(err => console.log(err))
+        })
+    }
   }, []);
 
-  useEffect(() => {
-    socket.on('startGame', (isFullRoom: boolean) => {
-      setIsFullRoom(isFullRoom);
-    });
-  }, [isFullRoom]);
+  useMemo(() => {
+    registerToGameSetUpHandlers(socket)
+      .gameStart((isFullRoom: boolean) => {
+        setHaveAllPlayersInGame(isFullRoom);
+      })
+  }, [])
 
   const handlePlaceShipOnBoard = (location: Location): void => {
     // alert('Placing');
@@ -69,7 +85,7 @@ function BoardGamePage() {
 
     // Update board
     // const res = await get('/boards')
-    gameContext.game?.player.placeShip(activeShipBeingPlaced, location);
+    game?.player.placeShip(activeShipBeingPlaced, location);
     // setPlayerBoardData(res.playerBoard)
 
     // Update ships to place
@@ -125,24 +141,10 @@ function BoardGamePage() {
     setStep(EAppStep.Waiting);
   };
 
-  socket.on('isPlayerReadyToPlayToClient', (playerName, isOpponentReady) => {
-    toast.warn(`${playerName} is ready`);
-  });
-
-  socket.on('isGameReadyToStart', (isGameReady) => {
-    const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
-    toast.promise(
-      resolveAfter3Sec,
-      {
-        pending: 'La partie va bientôt commencer'
-      }
-    ).then(() => setStep(EAppStep.Guessing))
-  });
-
   return (
     <main>
       <div style={{ display: 'flex', gap: '20px' }}>
-        {!isFullRoom ? (
+        {!haveAllPlayersInGame ? (
           <h1>
             En attente de l'adversaire{' '}
             {process.env.REACT_APP_BASE_URL_APP &&
@@ -159,7 +161,7 @@ function BoardGamePage() {
               <div style={{ display: 'flex', gap: '20px' }}>
                 <Board
                   variant="player"
-                  ocean={gameContext.game!.player.board.ocean}
+                  ocean={game!.player.board.ocean}
                   step={step}
                   onPlaceShip={handlePlaceShipOnBoard}
                   onGuess={handleGuess}
