@@ -121,7 +121,7 @@ describe('Testing placement ship', function() {
 })
 
 
-describe('Testing placement ship', function() {
+describe('Testing guessing ship', function() {
     const player = new Player("player 1", new Board(), "player");
 
     // Tests Ship is sunk
