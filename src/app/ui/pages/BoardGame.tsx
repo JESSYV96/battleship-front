@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Board from '../components/Board';
 import ShipsPlacement from '../components/Ship';
 import { ShipData } from '../../domain/models/Ship';
@@ -32,9 +32,6 @@ function BoardGamePage() {
   const [activeShipBeingPlaced, setActiveShipBeingPlaced] =
     useState<ShipData | null>(null);
   const [turn, setTurn] = useState<number>(1)
-
-
-  const [ctaText, setCtaText] = useState<string>('');
 
   const { game, step, setStep, haveAllPlayersInGame, setHaveAllPlayersInGame, playingPlayer, setPlayingPlayer } = useContext(GameContext);
 
@@ -71,14 +68,14 @@ function BoardGamePage() {
         setPlayingPlayer(game.player.name)
       })
     }
-  }, []);
+  });
 
   useMemo(() => {
     registerToGameSetUpHandlers(socket)
       .gameStart((isFullRoom: boolean) => {
         setHaveAllPlayersInGame(isFullRoom);
       })
-  }, [])
+  }, [setHaveAllPlayersInGame])
 
   const handlePlaceShipOnBoard = (location: Location): void => {
     // alert('Placing');
@@ -101,7 +98,6 @@ function BoardGamePage() {
     // All ships have been placed, start guessing
     if (shipsLeftToPlace.length === 0) {
       setShipsPlaced(true);
-      setCtaText("Great! Now it's time to search for your opponents ships.");
     }
   };
 

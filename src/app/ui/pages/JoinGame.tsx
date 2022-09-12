@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useParams, useNavigate, generatePath } from "react-router-dom";
 import { IPlayer } from '../../domain/models/Player';
 import { GameContext } from '../contexts/gameContext';
@@ -26,7 +26,7 @@ function JoinGame() {
 
         joinGame()
 
-    }, [navigate, params.gameId])
+    }, [navigate, params.gameId, game.player])
 
     return (
         <></>

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Game } from '../../domain/classes/Game'
 import { EAppStep } from '../../domain/enums/AppStep'
 import { GameContextType } from '../../domain/models/GameContext'
