@@ -67,6 +67,7 @@ function BoardGamePage() {
             game.player.board.ocean[i][j].updateStatus(updatedBoard.ocean[i][j].status)
           }
         }
+        toast.info(`A vous de jouer !`)
         setPlayingPlayer(game.player.name)
       })
     }
