@@ -11,7 +11,7 @@ import type { ITurn } from '../models/Turn'
 import type { Location } from '../models/Location'
 import { EPointStatus } from '../models/Point'
 
-class Player implements IPlayer {
+export class Player implements IPlayer {
 	public name: string
 	public board: IBoard
 	public fleet: IShip[] = [
