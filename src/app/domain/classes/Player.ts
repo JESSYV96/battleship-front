@@ -9,7 +9,7 @@ import type { Location } from '../models/Location';
 import { EPointStatus } from '../enums/PointStatus';
 import { IRole } from '../models/Game';
 
-class Player implements IPlayer {
+export class Player implements IPlayer {
   public name: string;
   public board: IBoard;
   public fleet: IShip[] = [
