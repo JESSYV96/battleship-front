@@ -7,7 +7,7 @@ import { EPointStatus } from '../enums/PointStatus';
 
 import type { Location } from '../models/Location';
 
-class Board implements IBoard {
+export class Board implements IBoard {
   public ocean: IPoint[][] = [];
 
   constructor() {
