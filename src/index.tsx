@@ -9,7 +9,7 @@ import HomePage from './app/ui/pages/Home';
 import BoardGamePage from './app/ui/pages/BoardGame';
 import JoinGame from './app/ui/pages/JoinGame';
 
-import { GameContextProvider } from './app/contexts/gameContext';
+import { GameContextProvider } from './app/ui/contexts/gameContext';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDqQ3blEKvMKH7snySU42sxe5Hgbug_v-g',
