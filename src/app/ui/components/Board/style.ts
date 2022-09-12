@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { EPointStatus } from '../../../domain/enums/PointStatus';
 import { EAppStep } from '../../../domain/enums/AppStep';
-import './Board.styles.css';
+// import './Board.styles.css';
 
 type TableProps = {
   variant: 'player' | 'opponent';
