@@ -2,7 +2,7 @@ import { EAppStep } from '../../../domain/enums/AppStep';
 import { EPointStatus } from '../../../domain/enums/PointStatus';
 import { IPoint } from '../../../domain/models/Point';
 import { Coordinate } from '../../../domain/valueObjects/Coordinate';
-import { Table } from './style';
+import { Table, TableData } from './style';
 
 interface BoardProps {
   variant: 'player' | 'opponent';
@@ -32,20 +32,21 @@ const Board: React.FC<BoardProps> = ({
   return (
     ocean && (
       <div className={`${variant}-board`}>
-        <Table variant={variant}>
-          <thead></thead>
+        <Table variant={variant} step={step}>
           <tbody>
             {ocean.map((row: IPoint[], idx: number) => {
               return (
                 <tr key={`row-${idx + 1}`}>
                   {row.map((point: IPoint) => {
                     return (
-                      <td
-                        className="board__square"
-                        key={`square-${point.location.x}-${point.location.y}`}
+                      <TableData
+                        className="cell"
+                        key={`cell-${point.location.x}-${point.location.y}`}
                         onClick={() => handlePointClick(point)}
                         data-status={point.status}
-                      ></td>
+                        variant={variant}
+                        status={point.status}
+                      />
                     );
                   })}
                 </tr>
