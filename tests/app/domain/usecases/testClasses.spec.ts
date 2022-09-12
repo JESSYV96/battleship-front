@@ -125,11 +125,6 @@ describe('Testing placement ship', function() {
     const player = new Player("player 1", new Board(), "player");
 
     // Tests Ship is sunk
-    it('should be return true, the ship is not on the map', () => {
-        const ship = new Ship(EShipType.Destroyer);
-        expect(ship.isSunk()).toEqual(true);
-    });
-
     it('should be return "Miss", there is not a ship on map', () => {
         expect(player.receiveGuess({x:1, y:1})).toEqual("Miss");
     });
