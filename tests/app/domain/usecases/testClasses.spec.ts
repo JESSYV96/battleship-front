@@ -123,7 +123,6 @@ describe('Testing placement ship', function() {
 
 describe('Testing placement ship', function() {
     const player = new Player("player 1", new Board(), "player");
-    
 
     // Tests Ship is sunk
     it('should be return true, the ship is not on the map', () => {
