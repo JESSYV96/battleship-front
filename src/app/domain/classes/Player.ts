@@ -170,25 +170,9 @@ export class Player implements IPlayer {
       result: status,
     };
 
-    // Check if location has been guessed already (for AI)
-    // If so, generate a new random location
-    // TODO: AI - https://www.datagenetics.com/blog/december32011/ - A better strategy
-    // "Hunt" vs "Target" mode, use a stack/queue to check up,left,right,down from square if is hit
-    // Add all 4 to stack for upcoming guesses if guess is hit (DFS)
-    // Don't add squares already guessed or edges
-    let guess = location;
-    let key = `${guess.x}${guess.y}`;
-    while (this.guessedSpaces.has(key)) {
-      guess = {
-        x: Math.floor(Math.random() * 10),
-        y: Math.floor(Math.random() * 10),
-      };
-      key = `${guess.x}${guess.y}`;
-    }
-
     // Make guess and add it to cache
-    turn.result = opponent.receiveGuess(guess);
-    this.guessedSpaces.set(key, status);
+    turn.result = opponent.receiveGuess(location);
+    this.guessedSpaces.set(`${location.x}${location.y}`, status);
 
     return turn;
   }
