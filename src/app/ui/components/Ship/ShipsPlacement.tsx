@@ -1,5 +1,14 @@
 import { ShipData } from '../../../domain/models/Ship';
 import './Ship.styles.css';
+import {
+  Ship,
+  ShipBlocks,
+  ShipButton,
+  ShipsContainer,
+  ShipHeader,
+} from './style';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRedo } from '@fortawesome/free-solid-svg-icons';
 
 interface ShipsPlacementProps {
   ships: ShipData[];
@@ -15,21 +24,17 @@ const ShipsPlacement: React.FC<ShipsPlacementProps> = ({
   onChangeOrientation,
 }: ShipsPlacementProps) => {
   return (
-    <div className="ships-group">
+    <ShipsContainer>
       {ships.map((s) => (
-        <div
-          key={s.name}
-          className={s === activeShipToPlace ? 'ship active-placing' : 'ship'}
-          data-shipblocks={s.name}
-        >
-          <p className="ship-header">
-            {s.name}
-            <button onClick={() => onChangeOrientation(s)}>
-              {/* <FontAwesomeIcon icon={faRedo} /> */}Change orientation
-            </button>
-          </p>
-          <div
-            className={`ship-blocks ${s.orientation}`}
+        <Ship key={s.name} data-shipblocks={s.name}>
+          <ShipHeader>{s.name}</ShipHeader>
+          <ShipButton onClick={() => onChangeOrientation(s)}>
+            <FontAwesomeIcon icon={faRedo} />
+          </ShipButton>
+          <ShipBlocks
+            ship={s.name}
+            orientation={s.orientation}
+            active={s === activeShipToPlace}
             onClick={() => onShipClick(s)}
           >
             <div>
@@ -39,10 +44,10 @@ const ShipsPlacement: React.FC<ShipsPlacementProps> = ({
                   <span key={idx} />
                 ))}
             </div>
-          </div>
-        </div>
+          </ShipBlocks>
+        </Ship>
       ))}
-    </div>
+    </ShipsContainer>
   );
 };
 
