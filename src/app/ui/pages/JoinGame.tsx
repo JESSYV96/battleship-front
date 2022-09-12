@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useParams, useNavigate, generatePath } from "react-router-dom";
 import { IPlayer } from '../../domain/models/Player';
+import { GameContext } from '../contexts/gameContext';
+
 
 import socket from '../../infra/services/socket.io/socket'
 
 function JoinGame() {
     const params = useParams();
     const navigate = useNavigate();
+
+    const { game } = useContext(GameContext);
 
     useEffect(() => {
         const joinGame = () => {
@@ -15,7 +19,8 @@ function JoinGame() {
                     resolve(opponent)
                 })
             }).then((opponent) => {
-                navigate(generatePath("/games/:gameId", { gameId: params.gameId }), { state: opponent })
+                game.player.name = opponent.name
+                navigate(generatePath("/games/:gameId", { gameId: params.gameId }))
             })
         }
 
