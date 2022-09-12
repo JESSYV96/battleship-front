@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { IPlayer } from '../../domain/models/Player';
-import initPlayerPoints from '../../playerPointsData.json';
 import Board from '../components/Board';
-import ShipsPlacement from '../components/Ship/ShipsPlacement';
+import ShipsPlacement from '../components/Ship';
 import { ShipData } from '../../domain/models/Ship';
 import { useSetUpGame } from '../../domain/usecases/setUpGame';
 import { Location } from '../../domain/models/Location';
-import { IPoint } from '../../domain/models/Point';
 import { GameContext } from '../contexts/gameContext';
 import { Coordinate } from '../../domain/valueObjects/Coordinate';
 import { EAppStep } from '../../domain/enums/AppStep';
@@ -26,9 +23,7 @@ const initialShipsToPlace: ShipData[] = [
 
 function BoardGamePage() {
   const params = useParams();
-  const location = useLocation();
   const setUpGame = useSetUpGame();
-  const [player, setPlayer] = useState<IPlayer>(location.state as IPlayer);
 
   // Placement states
   const [shipsToPlace, setShipsToPlace] =
@@ -36,24 +31,22 @@ function BoardGamePage() {
   const [shipsPlaced, setShipsPlaced] = useState(false);
   const [activeShipBeingPlaced, setActiveShipBeingPlaced] =
     useState<ShipData | null>(null);
+  const [turn, setTurn] = useState<number>(1)
 
-  // Player states
-  const [playerBoardData, setPlayerBoardData] = useState<IPoint[][] | null>(
-    null
-  );
-  const [oppBoardData, setOppBoardData] = useState<IPoint[][] | null>(
-    null
-  );
+
   const [ctaText, setCtaText] = useState<string>('');
 
-  const { game, step, setStep, haveAllPlayersInGame, setHaveAllPlayersInGame } = useContext(GameContext);
+  const { game, step, setStep, haveAllPlayersInGame, setHaveAllPlayersInGame, playingPlayer, setPlayingPlayer } = useContext(GameContext);
 
   useEffect(() => {
-    setPlayerBoardData(initPlayerPoints as unknown as IPoint[][]);
-    setOppBoardData(initPlayerPoints as unknown as IPoint[][]);
     return () => {
       registerToGameSetUpHandlers(socket)
-        .playerReadyToPlay((playerName) => {
+        .playerReadyToPlay((playerName, isOpponentReady, board) => {
+          for (let i = 0; i < board.ocean.length; i++) {
+            for (let j = 0; j < board.ocean[i].length; j++) {
+              game.opponent.board.ocean[i][j].updateStatus(board.ocean[i][j].status)
+            }
+          }
           toast.info(`${playerName} is ready`)
         })
 
@@ -67,6 +60,15 @@ function BoardGamePage() {
             }
           ).then(() => setStep(EAppStep.Guessing)).catch(err => console.log(err))
         })
+
+      registerToGameSetUpHandlers(socket).opponentHasPlayed((updatedBoard, attackingPlayer) => {
+        for (let i = 0; i < updatedBoard.ocean.length; i++) {
+          for (let j = 0; j < updatedBoard.ocean[i].length; j++) {
+            game.player.board.ocean[i][j].updateStatus(updatedBoard.ocean[i][j].status)
+          }
+        }
+        setPlayingPlayer(game.player.name)
+      })
     }
   }, []);
 
@@ -103,7 +105,19 @@ function BoardGamePage() {
   };
 
   const handleGuess = (location: Coordinate): void => {
-    alert('Guessing');
+    if (playingPlayer === game.player.name) {
+      console.log('guessingggg')
+      game.player.makeGuess(location, game.opponent)
+
+      socket.emit(
+        'updateBoard',
+        params.gameId,
+        game?.opponent.board,
+        game?.player,
+      );
+      setTurn(turn + 1)
+      setPlayingPlayer(game.opponent.name)
+    }
   };
 
   const handleShipClick = (ship: any): void => {
@@ -131,12 +145,13 @@ function BoardGamePage() {
 
   const readyToPlay = (e: any): void => {
     e.preventDefault();
-    setPlayer({ ...player, isReadyToPlay: true });
+    game.player.isReadyToPlay = true
     socket.emit(
       'isPlayerReadyToPlay',
       params.gameId,
-      player.name,
-      player.isReadyToPlay
+      game.player.name,
+      game.player.isReadyToPlay,
+      game.player.board
     );
     setStep(EAppStep.Waiting);
   };
@@ -157,11 +172,11 @@ function BoardGamePage() {
         ) : (
           (step === EAppStep.Placing && (
             <div className="grid">
-              <h2>Placing, {player.name}</h2>
+              <h2>Placing, {game.player.name}</h2>
               <div style={{ display: 'flex', gap: '20px' }}>
                 <Board
                   variant="player"
-                  ocean={game!.player.board.ocean}
+                  ocean={game.player.board.ocean}
                   step={step}
                   onPlaceShip={handlePlaceShipOnBoard}
                   onGuess={handleGuess}
@@ -183,18 +198,18 @@ function BoardGamePage() {
           )) ||
           (step === EAppStep.Guessing && (
             <div className="grid">
-              <h2>Guessing, {player.name}</h2>
+              <h2>Guessing, {game.player.name}</h2>
               <div className="col col-8">
                 <Board
                   variant="player"
-                  ocean={playerBoardData}
+                  ocean={game.player.board.ocean}
                   step={step}
                   onPlaceShip={handlePlaceShipOnBoard}
                   onGuess={handleGuess}
                 />
                 <Board
-                  variant="player"
-                  ocean={oppBoardData}
+                  variant="opponent"
+                  ocean={game.opponent.board.ocean}
                   step={step}
                   onPlaceShip={handlePlaceShipOnBoard}
                   onGuess={handleGuess}

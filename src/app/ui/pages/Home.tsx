@@ -1,19 +1,25 @@
 
-import React from 'react'
+import React, {useContext} from 'react'
 import { uuidv4 } from '@firebase/util';
 import { generatePath, useNavigate } from 'react-router-dom';
 import { IPlayer } from '../../domain/models/Player';
 import socket from '../../infra/services/socket.io/socket';
+import { GameContext } from '../contexts/gameContext';
 
 
 function HomePage() {
   const navigate = useNavigate();
 
+  const { game } = useContext(GameContext);
+
   const createNewGame = () => {
+    console.log('fetch', socket)
     const gameId: string = uuidv4()
     socket.on('connect', () => { })
     socket.emit('createGame', gameId, (player: IPlayer) => {
-      navigate(generatePath("/games/:gameId", { gameId }), { state: player })
+      console.log(player)
+      game.player.name = player.name
+      navigate(generatePath("/games/:gameId", { gameId }))
     });
   }
 

@@ -42,7 +42,6 @@ const opponentBoard = () => css`
       background: #d41f1f;
     }
   }
-  opacity: 0;
   border: 1px solid #555;
 `;
 
